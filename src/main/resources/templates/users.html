@@ -3,19 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>Users</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
 <h1>Users</h1>
-
 <form th:action="@{/admin/create}" method="get">
-    <input class="button" type="submit" value="Create" />
+    <input class="btn btn-primary" type="submit" value="Create" />
 </form>
 
-<form th:action="@{/logout}" method="get">
-    <input class="button" type="submit" value="Logout" />
-</form>
+<nav class="navbar fixed-top navbar-dark bg-primary">
+    <a class="navbar-brand" href="#">
+        <span th:text="${currentUser.username}"></span>
+        <span>with role:</span>
+        <span th:each="role : ${currentUser.roles}" th:text="${role.name}"></span>
+    </a>
+    <form th:action="@{/logout}" method="get" class="ml-auto">
+        <input class="btn btn-danger" type="submit" value="Logout" />
+    </form>
+</nav>
 
-<table>
+<table class="table">
     <thead>
     <tr>
         <th>Username</th>
@@ -36,10 +43,10 @@
         <td class="actions">
             <a th:href="@{/admin/edit(id=${user.getId()})}" class="edit-link">
                 <input type="hidden" name="id" th:value="${user.getId()}" />
-                <input class="button" type="submit" value="Edit" />
+                <input class="btn btn-primary" type="submit" value="Edit" />
             </a>
             <form th:method="post" th:action="@{/admin/users(id=${user.id})}" class="delete-form">
-                <input class="button" type="submit" value="Delete" />
+                <input class="btn btn-danger" type="submit" value="Delete" />
             </form>
 
         </td>

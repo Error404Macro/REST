@@ -61,9 +61,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void update(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+    public void update(User updatedUser) {
+        User existingUser = userRepository.getById(updatedUser.getId());
+        existingUser.setUsername(updatedUser.getUsername());
+        userRepository.save(existingUser);
     }
 
     @Override

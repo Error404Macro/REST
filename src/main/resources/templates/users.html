@@ -4,54 +4,204 @@
     <meta charset="UTF-8">
     <title>Users</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
 </head>
 <body>
 <h1>Users</h1>
-<form th:action="@{/admin/create}" method="get">
+<!--<form th:action="@{/admin/create}" method="get">
     <input class="btn btn-primary" type="submit" value="Create" />
-</form>
+</form>-->
+<div class="container">
+    <nav class="navbar fixed-top navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">
+            <span th:text="${currentUser.username}"></span>
+            <span>with role:</span>
+            <span th:each="role : ${currentUser.roles}" th:text="${role.name}"></span>
+        </a>
+        <form th:action="@{/logout}" method="get" class="ml-auto">
+            <button class="btn btn-danger btn-sm" type="submit">Logout</button>
+        </form>
+    </nav>
+    <h1>Admin page</h1>
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" href="#all" data-toggle="tab" role="tab" data-url="/users" id="allUsersLink">All
+                users</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#new" data-toggle="tab" role="tab" data-url="/create" id="newUserLink">New
+                user</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="all">
+            <div class="form">
+                <h3>All users</h3>
+                <table class="table table-striped table-borderless">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Age</th>
+                        <th>Role</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user : ${usersList}">
+                        <td th:text="${user.getId()}">UserID</td>
+                        <td th:text="${user.getUsername()}">Username</td>
+                        <td th:text="${user.getAge()}">Age</td>
 
-<nav class="navbar fixed-top navbar-dark bg-primary">
-    <a class="navbar-brand" href="#">
-        <span th:text="${currentUser.username}"></span>
-        <span>with role:</span>
-        <span th:each="role : ${currentUser.roles}" th:text="${role.name}"></span>
-    </a>
-    <form th:action="@{/logout}" method="get" class="ml-auto">
-        <input class="btn btn-danger" type="submit" value="Logout" />
-    </form>
-</nav>
+                        <td class="text-break">
+                            <th:block th:each="role : ${user.getRoles()}"
+                                      th:text="${role.getName().replace('ROLE_', ' ')}">Role
+                            </th:block>
+                        </td>
+                        <td>
+                            <!-- Ссылка для открытия модального окна редактирования -->
+                            <button type="button" class="btn btn-primary editUserModal"
+                                    th:data-user-id="${user.getId()}" data-toggle="modal" data-target="#editModal">
+                                Edit
+                            </button>
+                        </td>
+                        <td>
+                            <!-- Ссылка для удаления пользователя -->
+                            <button type="button" class="btn btn-danger delete-button"
+                                    th:data-user-id="${user.getId()}">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane fade" id="new">
+            <div id="createFormContainer"></div>
+        </div>
+    </div>
+    <!-- Модальное окно для редактирования -->
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit User</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Модальное окно для удаления -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Delete User</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Здесь будет отображено содержимое файла delete_form.html -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
 
-<table class="table">
-    <thead>
-    <tr>
-        <th>Username</th>
-        <th>Age</th>
-        <th>Role</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="user : ${usersList}">
-        <td th:text="${user.getUsername()}"></td>
-        <td th:text="${user.getAge()}"></td>
-        <td>
-            <ul th:each="role:${user.getRoles()}">
-                <li th:text="${role.getName().replace('ROLE_', '') + ' '}"></li>
-            </ul>
-        </td>
-        <td class="actions">
-            <a th:href="@{/admin/edit(id=${user.getId()})}" class="edit-link">
-                <input type="hidden" name="id" th:value="${user.getId()}" />
-                <input class="btn btn-primary" type="submit" value="Edit" />
-            </a>
-            <form th:method="post" th:action="@{/admin/users(id=${user.id})}" class="delete-form">
-                <input class="btn btn-danger" type="submit" value="Delete" />
-            </form>
+    <!--<table class="table">
+        <thead>
+        <tr>
+            <th>Username</th>
+            <th>Age</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${usersList}">
+            <td th:text="${user.getUsername()}"></td>
+            <td th:text="${user.getAge()}"></td>
+            <td>
+                <ul th:each="role:${user.getRoles()}">
+                    <li th:text="${role.getName().replace('ROLE_', '') + ' '}"></li>
+                </ul>
+            </td>
+            <td class="actions">
+                <a th:href="@{/admin/edit(id=${user.getId()})}" class="edit-link">
+                    <input type="hidden" name="id" th:value="${user.getId()}" />
+                    <input class="btn btn-primary" type="submit" value="Edit" />
+                </a>
+                <form th:method="post" th:action="@{/admin/users(id=${user.id})}" class="delete-form">
+                    <input class="btn btn-danger" type="submit" value="Delete" />
+                </form>
 
-        </td>
-    </tr>
-    </tbody>
-</table>
+            </td>
+        </tr>
+        </tbody>
+    </table>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+        $(document).ready(function () {
+            $.ajax({
+                url: "admin/create",
+                success: function (data) {
+                    $("#createFormContainer").html(data);
+                }
+            });
+        });
+
+        $(document).ready(function () {
+            $(".editUserModal").click(function () {
+                var userId = $(this).data("user-id");
+                var modalBody = $("#editModal .modal-body");
+
+                $.ajax({
+                    url: "admin/edit",
+                    data: {
+                        id: userId
+                    },
+                    success: function (data) {
+                        modalBody.html(data);
+                    }
+                });
+            });
+        });
+        $(document).ready(function () {
+            $(".delete-button").click(function () {
+                var userId = $(this).data("user-id");
+                var modalBody = $("#deleteModal .modal-body");
+
+                $.ajax({
+                    url: "admin/delete",
+                    success: function (data) {
+                        modalBody.html(data);
+                    }
+                });
+
+                $("#deleteModal").modal("show");
+            });
+        });
+    </script>
+    </div>
 </body>
 </html>

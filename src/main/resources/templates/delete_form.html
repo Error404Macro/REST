@@ -17,22 +17,6 @@
             background-color: white;
         }
 
-        .green-button {
-            background-color: #4CAF50; /* Зелёный цвет фона */
-            color: white; /* Белый цвет текста */
-            padding: 10px; /* Внутренние отступы */
-            border: none; /* Без границы */
-            border-radius: 5px; /* Скругление углов */
-            cursor: pointer; /* Вид курсора указывает на кликабельность */
-            font-size: 16px; /* Размер шрифта */
-        }
-
-        /* Дополнительные стили для красивой кнопки при наведении */
-        .green-button:hover {
-            background-color: darkgreen;
-            font-weight: bold;
-        }
-
         input {
             width: 250px; /* Установить желаемую ширину */
             height: 29px; /* Установить желаемую высоту */
@@ -68,32 +52,27 @@
     </style>
 </head>
 <body>
-<h1>Add user</h1>
-<form action="#" method="POST" th:action="@{/admin/create}" th:object="${user}">
+<form th:method="GET" th:object="${currentUser.username}">
     <div class="form-container">
         <label for="username">Enter username</label>
         <input type="text" th:field="*{username}" id="username" required/>
-        <p style="color: red" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">username error</p>
+        <p style="color: red" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">error</p>
 
         <label for="age">Enter age</label>
         <input type="number" min="0" max="127" th:field="*{age}" id="age">
         <p style="color: red" th:if="${#fields.hasErrors('age')}" th:errors="*{age}"> age error</p>
 
 
-        <label for="password">Enter password</label>
-        <input type="text" th:field="*{password}" id="password" required/>
-        <p style="color: red" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">password error</p>
-
         <div class="role-selection">
             <div class="role-title">Select role:</div>
-                <input type="checkbox" name="roles"
-                       th:each="roles : ${role}"
-                       th:value="${roles.getId()}"
-                       th:text="${roles.getName().replace('ROLE_', '') + ' '}"
-                       th:field="*{roles}"
-                />
+            <div class="checkboxes">
+                <div class="text-break">
+                    <th:block th:each="role : ${user.roles}"
+                              th:text="${role.roleName.replace('ROLE_', ' ')}">Role
+                    </th:block>
+                </div>
+            </div>
         </div>
-        <button class="green-button" type="submit">add new user</button>
     </div>
 </form>
 <br/>

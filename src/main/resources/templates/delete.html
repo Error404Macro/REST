@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New user</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<form th:method="GET" th:object="${user}">
+    <div class="form-container">
+        <label for="username">Enter username</label>
+        <input type="text" th:field="*{username}" id="username" required/>
+        <p style="color: red" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">username error</p>
+
+        <label for="age">Enter age</label>
+        <input type="number" min="0" max="127" th:field="*{age}" id="age">
+        <p style="color: red" th:if="${#fields.hasErrors('age')}" th:errors="*{age}"> age error</p>
+
+
+
+        <div class="role-selection">
+            <div class="role-title">Select role:</div>
+            <div class="checkboxes">
+                <div class="text-break">
+                    <th:block th:each="role : ${user.roles}"
+                              th:text="${roles.getName().replace('ROLE_', '') + ' '}">Role
+                    </th:block>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<br/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

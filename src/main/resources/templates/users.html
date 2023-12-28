@@ -110,23 +110,23 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="id">ID:</label>
-                        <input type="text" class="form-control" id="id" readonly th:value="${user.id}">
+                        <input type="text" class="form-control" id="id" readonly th:value="${user?.id}">
                     </div>
                     <div class="form-group">
                         <label for="username">Username:</label>
-                        <input type="text" class="form-control" id="username" readonly th:value="${user.username}">
+                        <input type="text" class="form-control" id="username" readonly th:value="${user?.username}">
                     </div>
                     <div class="form-group">
                         <label for="age">Age:</label>
-                        <input type="text" class="form-control" id="age" readonly th:value="${user.age}">
+                        <input type="text" class="form-control" id="age" readonly th:value="${user?.age}">
                     </div>
                     <div class="form-group">
                         <label for="password">Password:</label>
-                        <input type="password" class="form-control" id="password" readonly th:value="${user.password}">
+                        <input type="password" class="form-control" id="password" readonly th:value="${user?.password}">
                     </div>
                     <div class="form-group">
                         <label for="role">Role:</label>
-                        <input type="text" class="form-control" id="role" readonly th:value="${user.role}">
+                        <input type="text" class="form-control" id="role" readonly th:value="${user?.role}">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -197,7 +197,6 @@
                     success: function (data) {
                         modalBody.html(data);
 
-                        // Добавить обработчик события для кнопки "Update"
                         $('#editModal .btn-primary').off('click').on('click', function () {
                             var form = modalBody.find('form');
 

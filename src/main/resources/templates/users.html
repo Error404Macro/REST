@@ -110,7 +110,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="id">ID:</label>
-                        <input type="text" class="form-control" id="id" readonly th:value="${user?.id}">
+                        <input type="text" class="form-control" id="id" readonly th:value="${user?.id()}">
                     </div>
                     <div class="form-group">
                         <label for="username">Username:</label>
@@ -220,7 +220,7 @@
 
                 // Загрузить файл HTML с помощью AJAX-запроса
                 $.ajax({
-                    url: "admin/delete",
+                    url: "admin/edit",
                     method: "GET",
                     success: function(response) {
                         // Вставить HTML в тело модального окна

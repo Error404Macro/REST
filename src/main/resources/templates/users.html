@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Users</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"  >
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
 </head>
 <body>
@@ -68,9 +68,59 @@
                         </td>
                         <td>
                             <!-- Ссылка для удаления пользователя -->
-                            <button type="button" class="btn btn-danger delete-button" data-toggle="modal" data-target="#deleteModal" data-user-id="${user.getId()}">
+                            <button type="button" class="btn btn-danger delete-button"
+                                    th:attr="data-user-id=${user.getId()}, data-toggle='modal', data-target='#deleteModal'">
                                 Delete
                             </button>
+                            <!-- Модальное окно удаления -->
+                            <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog"
+                                 aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteModalLabel">Delete User</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label for="userId"><strong>ID:</strong></label>
+                                                <input type="text" class="form-control" id="userId" readonly th:value="${user.getId()}">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="username"><strong>Username:</strong></label>
+                                                <input type="text" class="form-control" id="username" readonly th:value="${user.getUsername()}">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="age"><strong>Age:</strong></label>
+                                                <input type="text" class="form-control" id="age" readonly th:value="${user.getAge()}">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="password"><strong>Password:</strong></label>
+                                                <input type="password" class="form-control" id="password" readonly th:value="${user.getPassword()}">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="role"><strong>Role:</strong></label>
+                                                <input type="text" class="form-control" id="role" readonly th:each="role : ${user.getRoles()}" th:value="${role.getName().replace('ROLE_', ' ')}">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                Cancel
+                                            </button>
+                                            <form th:method="post" th:action="@{/admin/users}" class="delete-form">
+                                                <input type="hidden" name="id" th:value="${user.getId()}">
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     </tbody>
@@ -97,146 +147,86 @@
             </div>
         </div>
     </div>
-    <!-- Модальное окно для удаления -->
-    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true" th:with="user=${user}">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Delete User</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="id">ID:</label>
-                        <input type="text" class="form-control" id="id" readonly th:value="${user?.id()}">
-                    </div>
-                    <div class="form-group">
-                        <label for="username">Username:</label>
-                        <input type="text" class="form-control" id="username" readonly th:value="${user?.username}">
-                    </div>
-                    <div class="form-group">
-                        <label for="age">Age:</label>
-                        <input type="text" class="form-control" id="age" readonly th:value="${user?.age}">
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password:</label>
-                        <input type="password" class="form-control" id="password" readonly th:value="${user?.password}">
-                    </div>
-                    <div class="form-group">
-                        <label for="role">Role:</label>
-                        <input type="text" class="form-control" id="role" readonly th:value="${user?.role}">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirmDeleteButton">Delete</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
-    <br>
 
-    <!--<table class="table">
-        <thead>
-        <tr>
-            <th>Username</th>
-            <th>Age</th>
-            <th>Role</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="user : ${usersList}">
-            <td th:text="${user.getUsername()}"></td>
-            <td th:text="${user.getAge()}"></td>
-            <td>
-                <ul th:each="role:${user.getRoles()}">
-                    <li th:text="${role.getName().replace('ROLE_', '') + ' '}"></li>
-                </ul>
-            </td>
-            <td class="actions">
-                <a th:href="@{/admin/edit(id=${user.getId()})}" class="edit-link">
-                    <input type="hidden" name="id" th:value="${user.getId()}" />
-                    <input class="btn btn-primary" type="submit" value="Edit" />
-                </a>
-                <form th:method="post" th:action="@{/admin/users(id=${user.id})}" class="delete-form">
-                    <input class="btn btn-danger" type="submit" value="Delete" />
-                </form>
+</div>
+<br>
 
-            </td>
-        </tr>
-        </tbody>
-    </table>-->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
+<!--<table class="table">
+    <thead>
+    <tr>
+        <th>Username</th>
+        <th>Age</th>
+        <th>Role</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user : ${usersList}">
+        <td th:text="${user.getUsername()}"></td>
+        <td th:text="${user.getAge()}"></td>
+        <td>
+            <ul th:each="role:${user.getRoles()}">
+                <li th:text="${role.getName().replace('ROLE_', '') + ' '}"></li>
+            </ul>
+        </td>
+        <td class="actions">
+            <a th:href="@{/admin/edit(id=${user.getId()})}" class="edit-link">
+                <input type="hidden" name="id" th:value="${user.getId()}" />
+                <input class="btn btn-primary" type="submit" value="Edit" />
+            </a>
+            <form th:method="post" th:action="@{/admin/users(id=${user.id})}" class="delete-form">
+                <input class="btn btn-danger" type="submit" value="Delete" />
+            </form>
 
-        $(document).ready(function () {
+        </td>
+    </tr>
+    </tbody>
+</table>-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+    $(document).ready(function () {
+        $.ajax({
+            url: "admin/create",
+            success: function (data) {
+                $("#createFormContainer").html(data);
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        $(document).on('click', '.editUserModal', function () {
+            var userId = $(this).data('user-id');
+            var modalBody = $('#editModal .modal-body');
+
             $.ajax({
-                url: "admin/create",
+                url: 'admin/edit',
+                data: {
+                    id: userId
+                },
                 success: function (data) {
-                    $("#createFormContainer").html(data);
+                    modalBody.html(data);
+
+                    $('#editModal .btn-primary').off('click').on('click', function () {
+                        var form = modalBody.find('form');
+
+                        $.ajax({
+                            url: form.attr('action'),
+                            method: form.attr('method'),
+                            data: form.serialize(),
+                            success: function (response) {
+                                $('#editModal').modal('hide');
+                            }
+                        });
+                    });
                 }
             });
         });
+    });
 
-        $(document).ready(function () {
-            $(document).on('click', '.editUserModal', function () {
-                var userId = $(this).data('user-id');
-                var modalBody = $('#editModal .modal-body');
-
-                $.ajax({
-                    url: 'admin/edit',
-                    data: {
-                        id: userId
-                    },
-                    success: function (data) {
-                        modalBody.html(data);
-
-                        $('#editModal .btn-primary').off('click').on('click', function () {
-                            var form = modalBody.find('form');
-
-                            $.ajax({
-                                url: form.attr('action'),
-                                method: form.attr('method'),
-                                data: form.serialize(),
-                                success: function (response) {
-                                    $('#editModal').modal('hide');
-                                }
-                            });
-                        });
-                    }
-                });
-            });
-        });
-        $(document).ready(function() {
-            // Обработчик клика на кнопке удаления
-            $(".delete-button").on("click", function() {
-                var htmlFile = $(this).data("html-file"); // Получить путь к файлу HTML из атрибута data
-
-                // Загрузить файл HTML с помощью AJAX-запроса
-                $.ajax({
-                    url: "admin/edit",
-                    method: "GET",
-                    success: function(response) {
-                        // Вставить HTML в тело модального окна
-                        $("#deleteModal .modal-body").html(response);
-
-                        // Открыть модальное окно
-                        $("#deleteModal").modal("show");
-                    },
-                    error: function() {
-                        console.log("Ошибка при загрузке файла HTML");
-                    }
-                });
-            });
-        });
-
-    </script>
-    </div>
+</script>
+</div>
 </body>
 </html>

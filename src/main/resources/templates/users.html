@@ -69,11 +69,11 @@
                         <td>
                             <!-- Ссылка для удаления пользователя -->
                             <button type="button" class="btn btn-danger delete-button"
-                                    th:attr="data-user-id=${user.getId()}, data-toggle='modal', data-target='#deleteModal'">
+                                    th:attr="data-user-id=${user.getId()}, data-toggle='modal', data-target='#deleteModal-' + ${user.getId()}">
                                 Delete
                             </button>
                             <!-- Модальное окно удаления -->
-                            <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog"
+                            <div class="modal fade" th:id="'deleteModal-' + ${user.getId()}" tabindex="-1" role="dialog"
                                  aria-labelledby="deleteModalLabel" aria-hidden="true">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">

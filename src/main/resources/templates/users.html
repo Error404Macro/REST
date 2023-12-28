@@ -94,14 +94,11 @@
                 </div>
                 <div class="modal-body">
                 </div>
-                <!--<div class="modal-footer">
-                   &lt;!&ndash; <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>&ndash;&gt;
-                </div>-->
             </div>
         </div>
     </div>
     <!-- Модальное окно для удаления -->
-    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true" th:with="user=${user}">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -111,7 +108,26 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to delete this user?</p>
+                    <div class="form-group">
+                        <label for="id">ID:</label>
+                        <input type="text" class="form-control" id="id" readonly th:value="${user.id}">
+                    </div>
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" class="form-control" id="username" readonly th:value="${user.username}">
+                    </div>
+                    <div class="form-group">
+                        <label for="age">Age:</label>
+                        <input type="text" class="form-control" id="age" readonly th:value="${user.age}">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" class="form-control" id="password" readonly th:value="${user.password}">
+                    </div>
+                    <div class="form-group">
+                        <label for="role">Role:</label>
+                        <input type="text" class="form-control" id="role" readonly th:value="${user.role}">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -194,6 +210,28 @@
                                 }
                             });
                         });
+                    }
+                });
+            });
+        });
+        $(document).ready(function() {
+            // Обработчик клика на кнопке удаления
+            $(".delete-button").on("click", function() {
+                var htmlFile = $(this).data("html-file"); // Получить путь к файлу HTML из атрибута data
+
+                // Загрузить файл HTML с помощью AJAX-запроса
+                $.ajax({
+                    url: "admin/delete",
+                    method: "GET",
+                    success: function(response) {
+                        // Вставить HTML в тело модального окна
+                        $("#deleteModal .modal-body").html(response);
+
+                        // Открыть модальное окно
+                        $("#deleteModal").modal("show");
+                    },
+                    error: function() {
+                        console.log("Ошибка при загрузке файла HTML");
                     }
                 });
             });

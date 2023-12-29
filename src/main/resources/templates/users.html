@@ -11,6 +11,12 @@
 <!--<form th:action="@{/admin/create}" method="get">
     <input class="btn btn-primary" type="submit" value="Create" />
 </form>-->
+<nav class="nav flex-column">
+    <a class="nav-link active" href="#!" th:text="${currentUser.roles[0].name}"></a>
+    <a class="nav-link" href="#!" th:if="${currentUser.roles.size() > 1}"
+       th:text="${currentUser.roles[1].name}"
+       th:href="@{'/user'}"></a>
+</nav>
 <div class="container">
     <nav class="navbar fixed-top navbar-dark bg-primary">
         <a class="navbar-brand" href="#">
@@ -33,6 +39,7 @@
                 user</a>
         </li>
     </ul>
+
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="all">
             <div class="form">

@@ -11,9 +11,7 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-md bg-dark navbar-dark">
-    <!-- Brand -->
     <a class="navbar-brand ms-4" id="navbar-head">
-        <!--Filling via JSON-->
     </a>
     <div class="collapse navbar-collapse d-flex justify-content-end me-4">
         <ul class="navbar-nav">
@@ -30,7 +28,6 @@
     <div class="row">
         <div class="col-2">
             <br>
-            <!--Pill-->
             <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                 <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill"
                         data-bs-target="#v-pills-home"
@@ -63,9 +60,7 @@
                             <tr>
                                 <th> ID</th>
                                 <th> Username</th>
-
                                 <th> Age</th>
-
                                 <th> Role</th>
                             </tr>
                             </thead>
@@ -84,20 +79,25 @@
         res => {
             res.json().then(
                 data => {
+                    let rolesHtml = ""; // Переменная для хранения HTML-кода ролей пользователя
+                    data.roles.forEach((role) => {
+                        rolesHtml += `<span>${role.name}</span><br>`; // Добавляем каждую роль в переменную rolesHtml
+                    });
+
                     document.getElementById('navbar-head').innerHTML = `
                         <strong>${data.username}</strong>
                         with roles:
-                        ${data.roles}`;
+                        ${rolesHtml}`;
                     document.getElementById("table").innerHTML = `
                         <tr>
                         <td>${data.id}</td>
                         <td>${data.username}</td>
                         <td>${data.age}</td>
-                        <td>${data.roles}</td></tr>`;
+                        <td>${rolesHtml}</td></tr>`;
                 }
             )
         }
-    )
+    );
 </script>
 </body>
 </html>

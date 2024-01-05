@@ -27,12 +27,26 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         this.successUserHandler = successUserHandler;
     }
 
-    @Override
+    /*@Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/admin/**").hasAuthority("ADMIN")
                 .antMatchers("/user/**").hasAnyAuthority("USER", "ADMIN")
+                .and()
+                .formLogin().successHandler(successUserHandler)
+                .permitAll()
+                .and()
+                .logout()
+                .logoutSuccessUrl("/login");
+
+    }*/
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/admin/**").permitAll()
+                .antMatchers("/user/**").permitAll()
                 .and()
                 .formLogin().successHandler(successUserHandler)
                 .permitAll()

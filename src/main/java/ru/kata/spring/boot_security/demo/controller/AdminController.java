@@ -2,78 +2,70 @@ package ru.kata.spring.boot_security.demo.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
+import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
 import java.security.Principal;
+import java.util.List;
 
-@Controller
-@RequestMapping("/admin")
+@RestController
+@RequestMapping("/admin/api")
 public class AdminController {
     private final UserService userService;
-    private final RoleService roleService;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public AdminController(UserService userService, RoleService roleService) {
+    public AdminController(UserService userService, RoleRepository roleRepository) {
         this.userService = userService;
-        this.roleService = roleService;
+        this.roleRepository = roleRepository;
     }
 
-    /*@GetMapping("")
-    public String getAllUsers(ModelMap modelMap) {
-        modelMap.addAttribute("usersList", userService.findAll());
-
-        return "users";
-    }*/
-    @GetMapping("")
-    public String getAllUsers(ModelMap modelMap, Principal principal) {
-        String username = principal.getName();
-        User currentUser = userService.findUserByUsername(username);
-        modelMap.addAttribute("usersList", userService.findAll());
-        modelMap.addAttribute("currentUser", currentUser);
-
-        return "users";
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUsers() {
+        return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
     }
 
-    @PostMapping("/create")
-    public String addUser(@ModelAttribute(value = "user") User user) {
+    @GetMapping("/user/{id}")
+    public ResponseEntity<User> getUser(@PathVariable Long id) {
+        return new ResponseEntity<>(userService.getById(id), HttpStatus.OK);
+    }
+
+    @PostMapping()
+    public ResponseEntity<User> addUser(@RequestBody User user) {
         userService.save(user);
-
-        return "redirect:/admin";
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
-
-    @GetMapping("/create")
-    public String create(ModelMap modelMap) {
-        modelMap.addAttribute("user", new User());
-        modelMap.addAttribute("role", roleService.getAllUser());
-        return "create";
+    /*@PostMapping()
+    public User addUser(@RequestBody User user) {
+        userService.save(user);
+        return user;
     }
-
-    @GetMapping("/edit")
-    public String edit(@RequestParam(value = "id", required = false) Long id, ModelMap modelMap) {
-        modelMap.addAttribute("user", userService.getById(id));
-        modelMap.addAttribute("role", roleService.getAllUser());
-
-        return "edit";
-    }
-
-    @PostMapping("/edit")
-    public String update(@ModelAttribute(value = "user") User user) {
+*/
+    @PutMapping("/update")
+    public ResponseEntity<User> update(@RequestBody User user) {
         userService.update(user);
-
-        return "redirect:/admin";
+        return new ResponseEntity<>(user, HttpStatus.ACCEPTED);
     }
 
-    @PostMapping("users")
-    public String delete(@RequestParam(value = "id", required = false) Long id) {
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> delete(@PathVariable Long id) {
         userService.deleteById(id);
-        return "redirect:/admin";
+        return new ResponseEntity<>("User with ID = " + id + " was deleted", HttpStatus.ACCEPTED);
+    }
+    @GetMapping("/roles")
+    public ResponseEntity<List<Role>> getRoles() {
+        return new ResponseEntity<>(roleRepository.findAll(), HttpStatus.OK);
     }
 
 }

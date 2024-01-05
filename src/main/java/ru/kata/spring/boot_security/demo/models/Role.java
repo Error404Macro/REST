@@ -1,6 +1,10 @@
 package ru.kata.spring.boot_security.demo.models;
 
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import javax.persistence.*;
 
 @Entity
@@ -38,5 +42,9 @@ public class Role {
     }
     public void assignRole(User user) {
         user.getRoles().add(this);
+    }
+    @Override
+    public String toString() {
+        return name;
     }
 }

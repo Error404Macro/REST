@@ -401,7 +401,7 @@
                     })
             })
     }
-    function getRoles(id) {
+    /*function getRoles(id) {
         if (id === undefined) {
             id = "";
         }
@@ -420,7 +420,25 @@
         });
         const selectedRoleId = selectElement.value;
         return selectedRoleId;
+    }*/
+    function getRoles() {
+        fetch("/admin/api/roles")
+            .then(res => res.json())
+            .then(roles => {
+                const selectElement = document.getElementById("singleRoleId");
+                selectElement.innerHTML = ""; // Очищаем список ролей перед обновлением
+                roles.forEach((r) => {
+                    let el = document.createElement("option");
+                    el.value = r.id;
+                    el.text = r.name;
+                    selectElement.appendChild(el);
+                });
+            });
     }
+
+    // Вызываем функцию getRoles() в начале скрипта, чтобы загрузить список ролей при загрузке страницы
+    getRoles();
+
 
     function editUser(id) {
         let form = document.forms['edit-form-' + id];
@@ -574,15 +592,60 @@
     }
     // Сохраняем нового юзера, добавляем в таблицу, очищаем форму и перемещаемся к новой строчке
     // Самовызываемая функция добавления обработчика события
-    (function () {
+    /*(function () {
         let form = document.forms['new-user-form'];
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-
             const roles = [
                 { id: 1, name: "ADMIN" },
                 { id: 2, name: "USER" },
             ];
+            const selectedRoleId = getRoles();
+            fetch("/admin/api", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: form.username.value,
+                    age: form.age.value,
+                    password: form.password.value,
+                    singleRoleId: form.singleRoleId.value
+                })
+            })
+                .then(() => {
+                    form.reset();
+                })
+                .then(res => res.json())
+                .then(u => {
+                    document.getElementById("full").insertAdjacentHTML('beforeend',
+                        `<tr id=tr_${u.id}>
+                        <td>${u.id}</td>
+                        <td>${u.username}</td>
+                        <td>${u.age}</td>
+                        <td>${u.singleRoleId}</td>
+                        <td>
+                            <input type="hidden" id="singleRoleId${u.id}">
+                            <div class="btn-toolbar" id="btn-toolbar-${u.id}">
+                                <button type="button" class="btn btn-primary float-md-end mx-2" data-bs-toggle="modal" data-bs-target="#edit${u.id}" id="edit-button-${u.id}">
+                                    Edit
+                                </button>
+                                <button type="button" class="btn btn-danger float-md-end mx-2" data-bs-toggle="modal" data-bs-target="#delete${u.id}" id="delete-button-${u.id}">
+                                    Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>`);
+                    document.getElementById('home-tab').click();
+                    document.getElementById('tr_' + u.id).scrollIntoView();
+                    addingEditModal(u.id);
+                });
+        });
+    })();*/
+    (function () {
+        let form = document.forms['new-user-form'];
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
 
             const selectedRoleId = getRoles();
 
@@ -598,34 +661,35 @@
                     roles: [
                         {
                             id: selectedRoleId,
-                            name: roles.find(r => r.id === selectedRoleId).name
+                            name: form.singleRoleId.options[form.singleRoleId.selectedIndex].text
                         }
                     ]
                 })
             })
-                .then(() => {
-                    form.reset();
-                })
                 .then(res => res.json())
                 .then(u => {
                     document.getElementById("full").insertAdjacentHTML('beforeend',
                         `<tr id=tr_${u.id}>
-                        <td>${u.id}</td>
-                        <td>${u.username}</td>
-                        <td>${u.age}</td>
-                        <td>${u.roles}</td>
-                        <td>
-                            <input type="hidden" id="singleRoleId${u.id}">
-                            <div class="btn-toolbar" id="btn-toolbar-${u.id}">
-                                <button type="button" class="btn btn-primary float-md-end mx-2" data-bs-toggle="modal" data-bs-target="#edit${u.id}" id="edit-button-${u.id}">
-                                    Edit
-                                </button>
-                                <button type="button" class="btn btn-danger float-md-end mx-2" data-bs-toggle="modal" data-bs-target="#delete${u.id}" id="delete-button-${u.id}">
-                                    Delete
-                                </button>
-                            </div>
-                        </td>
-                    </tr>`);
+                    <td>${u.id}</td>
+                    <td>${u.username}</td>
+                    <td>${u.age}</td>
+                    <td>${u.roles[0].name}</td>
+                    <td>
+                        <input type="hidden" id="singleRoleId${u.id}">
+                        <div class="btn-toolbar" id="btn-toolbar-${u.id}">
+                            <button type="button" class="btn btn-primary float-md-end mx-2" data-bs-toggle="modal" data-bs-target="#edit${u.id}" id="edit-button-${u.id}">
+                                Edit
+                            </button>
+                            <button type="button" class="btn btn-danger float-md-end mx-2" data-bs-toggle="modal" data-bs-target="#delete${u.id}" id="delete-button-${u.id}">
+                                Delete
+                            </button>
+                        </div>
+                    </td>
+                </tr>`);
+                    form.reset();
+                    const table = document.getElementById("full");
+                    table.style.display = "none"; // Скрываем таблицу
+                    location.reload();
                     document.getElementById('home-tab').click();
                     document.getElementById('tr_' + u.id).scrollIntoView();
                     addingEditModal(u.id);

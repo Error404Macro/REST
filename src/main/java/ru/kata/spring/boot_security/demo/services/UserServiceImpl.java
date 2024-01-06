@@ -13,6 +13,7 @@ import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,13 +47,29 @@ public class UserServiceImpl implements UserService {
         return userRepository.findUserByUsername(username);
     }
 
-    @Override
+    /*@Override
     @Transactional
     public void save(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
-
+*/
+    @Override
+    @Transactional
+    public void save(User user) {
+        if (userRepository.findUserByUsername(user.getUsername()) == null) {
+            for (Role role : user.getRoles()) {
+                roleRepository.save(role);
+            }
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            userRepository.save(user);
+        } else {
+            User existingUser = userRepository.findUserByUsername(user.getUsername());
+            existingUser.setRoles(user.getRoles());
+            existingUser.setAge(user.getAge());
+            userRepository.save(existingUser);
+        }
+    }
     @Override
     @Transactional
     public void deleteById(Long id) {

@@ -17,6 +17,7 @@ import ru.kata.spring.boot_security.demo.services.UserService;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/admin/api")
@@ -63,9 +64,14 @@ public class AdminController {
         userService.deleteById(id);
         return new ResponseEntity<>("User with ID = " + id + " was deleted", HttpStatus.ACCEPTED);
     }
-    @GetMapping("/roles")
+    /*@GetMapping("/roles")
     public ResponseEntity<List<Role>> getRoles() {
         return new ResponseEntity<>(roleRepository.findAll(), HttpStatus.OK);
+    }*/
+    @GetMapping("/roles")
+    public ResponseEntity<List<Role>> getRoles() {
+        List<Role> roles = roleRepository.findAll();
+        return ResponseEntity.ok(roles);
     }
 
 }

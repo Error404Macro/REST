@@ -40,7 +40,6 @@ public class User implements UserDetails {
         this.age = age;
         this.roles = roles;
     }
-
     public User() {
     }
 
@@ -107,4 +106,5 @@ public class User implements UserDetails {
     public void setAge(int age) {
         this.age = age;
     }
+
 }

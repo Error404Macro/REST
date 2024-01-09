@@ -473,7 +473,7 @@
                 });
         });
     }
-        function addingDeleteModal(id) {
+    function addingDeleteModal(id) {
         fetch("admin/api/user/" + id).then(
             res => {
                 res.json().then(
@@ -549,9 +549,8 @@
                                                         data-bs-dismiss="modal" id="close-button-delete-${u.id}">
                                                         Close
                                                     </button>
-                                                    <button type="submit" class="btn btn-danger">
-                                                        Delete
-                                                    </button>
+                                                   <button type="button" class="btn btn-danger"
+                                                   onclick="deleteUser(${u.id})">Delete</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -563,78 +562,32 @@
                     })
             })
     }
-    function deleteUser(id) {
-        let form = document.forms['delete-form-' + id];
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            fetch("/admin/api/delete/" + id, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    id: form.id.value,
-                    username: form.username.value,
-                    age: form.age.value,
-                    singleRoleId: document.getElementById('deleteSingleRoleId' + id).value
-                })
+    function deleteUser(userId) {
+        fetch(`/admin/api/delete/${userId}`, {
+            method: 'DELETE'
+        })
+            .then(response => {
+                if (response.ok) {
+                    // успешно удалено, выполните необходимые действия
+                    const row = document.getElementById(`tr_${userId}`);
+                    row.remove(); // удаление строки пользователя из таблицы
+
+                    // Закрытие модального окна
+                    closeModal(); // Ваша функция для закрытия модального окна
+                } else {
+                    // обработка ошибки при удалении пользователя
+                }
+            })
+            .catch(error => {
+                // обработка ошибки при отправке запроса
             });
-            document.getElementById('close-button-delete-' + id).click(); // закрываем вручную модалку
-            document.getElementById("tr_" + id).remove();
-        });
+    }
+    function closeModal() {
+        const modal = document.getElementById('myModal');
+        modal.style.display = 'none';
     }
     // Сохраняем нового юзера, добавляем в таблицу, очищаем форму и перемещаемся к новой строчке
     // Самовызываемая функция добавления обработчика события
-    /*(function () {
-        let form = document.forms['new-user-form'];
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const roles = [
-                { id: 1, name: "ADMIN" },
-                { id: 2, name: "USER" },
-            ];
-            const selectedRoleId = getRoles();
-            fetch("/admin/api", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    username: form.username.value,
-                    age: form.age.value,
-                    password: form.password.value,
-                    singleRoleId: form.singleRoleId.value
-                })
-            })
-                .then(() => {
-                    form.reset();
-                })
-                .then(res => res.json())
-                .then(u => {
-                    document.getElementById("full").insertAdjacentHTML('beforeend',
-                        `<tr id=tr_${u.id}>
-                        <td>${u.id}</td>
-                        <td>${u.username}</td>
-                        <td>${u.age}</td>
-                        <td>${u.singleRoleId}</td>
-                        <td>
-                            <input type="hidden" id="singleRoleId${u.id}">
-                            <div class="btn-toolbar" id="btn-toolbar-${u.id}">
-                                <button type="button" class="btn btn-primary float-md-end mx-2" data-bs-toggle="modal" data-bs-target="#edit${u.id}" id="edit-button-${u.id}">
-                                    Edit
-                                </button>
-                                <button type="button" class="btn btn-danger float-md-end mx-2" data-bs-toggle="modal" data-bs-target="#delete${u.id}" id="delete-button-${u.id}">
-                                    Delete
-                                </button>
-                            </div>
-                        </td>
-                    </tr>`);
-                    document.getElementById('home-tab').click();
-                    document.getElementById('tr_' + u.id).scrollIntoView();
-                    addingEditModal(u.id);
-                });
-        });
-    })();*/
     (function () {
         let form = document.forms['new-user-form'];
         form.addEventListener('submit', (e) => {

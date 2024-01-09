@@ -31,7 +31,6 @@ public class UserServiceImpl implements UserService {
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
-
     @Override
     public List<User> findAll() {
         return userRepository.findAll();
@@ -76,7 +75,7 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
-    @Override
+    /*@Override
     @Transactional
     public void update(User updatedUser) {
         User existingUser = userRepository.getById(updatedUser.getId());
@@ -84,7 +83,27 @@ public class UserServiceImpl implements UserService {
         existingUser.setRoles(updatedUser.getRoles());
         existingUser.setAge(updatedUser.getAge());
         userRepository.save(existingUser);
+    }*/
+    @Override
+    @Transactional
+    public void update(User updatedUser) {
+        User existingUser = userRepository.getById(updatedUser.getId());
+
+        // Сохраняем новые роли, если они есть
+        for (Role role : updatedUser.getRoles()) {
+            if (role.getId() == null) {
+                roleRepository.save(role);
+            }
+        }
+
+        // Обновляем свойства пользователя
+        existingUser.setUsername(updatedUser.getUsername());
+        existingUser.setRoles(updatedUser.getRoles());
+        existingUser.setAge(updatedUser.getAge());
+
+        userRepository.save(existingUser);
     }
+
 
     @Override
     public void createAdmin(String username, String password) {

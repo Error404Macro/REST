@@ -25,6 +25,7 @@ public class AdminController {
     private final UserService userService;
     private final RoleRepository roleRepository;
 
+
     @Autowired
     public AdminController(UserService userService, RoleRepository roleRepository) {
         this.userService = userService;
@@ -73,6 +74,7 @@ public class AdminController {
         List<Role> roles = roleRepository.findAll();
         return ResponseEntity.ok(roles);
     }
+
 
 }
 

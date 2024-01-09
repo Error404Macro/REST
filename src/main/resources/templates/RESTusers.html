@@ -361,12 +361,12 @@
                                                             required
                                                         />
                                                     </div>
-                                                    <div class="form-group" id="edit-roles-${u.id}">
+                                                    <div class="form-group" id="edit-roles-${u.id}" th:each="role : ${getRoles()}">
                                                         <strong class="d-flex justify-content-center">
                                                             Role
                                                         </strong>
                                                         <select size="2"
-                                                            id="singleRoleId${u.id}"
+                                                            id="singleRoleId"
                                                             class="form-control"
                                                             required>
                                                             <!--Filling via JSON-->
@@ -389,8 +389,7 @@
                                     </div>
                                 </form>
                             `);
-
-                                    getRoles(u.id); // вызываем для созданной модалки заполнение ролей
+                                    getRoles(); // вызываем для созданной модалки заполнение ролей
                                     addingDeleteModal(u.id) // вызываем создание модалки удаления
                                     editUser(u.id); // вызываем функцию отправки данных на контроллер
                                     firstTime[u.id] = true; // Добавляем проверку, если модальные окна были сформированы,
@@ -401,6 +400,8 @@
                     })
             })
     }
+
+
     /*function getRoles(id) {
         if (id === undefined) {
             id = "";
@@ -440,10 +441,12 @@
     getRoles();
 
 
+
     function editUser(id) {
         let form = document.forms['edit-form-' + id];
         form.addEventListener('submit', (e) => {
             e.preventDefault();
+            const selectedRoleId = getRoles();
             fetch("/admin/api/update", {
                 method: 'PUT',
                 headers: {
@@ -454,7 +457,12 @@
                     username: form.username.value,
                     age: form.age.value,
                     password: form.password.value,
-                    roles: document.getElementById('singleRoleId' + id).value
+                    roles: [
+                        {
+                            id: selectedRoleId,
+                            name: form.singleRoleId.options[form.singleRoleId.selectedIndex].text
+                        }
+                    ]
                 })
             })
                 .then(res => res.json())
@@ -465,7 +473,7 @@
                             <td>${u.username}</td>
                             <td>${u.age}</td>
                             <td>${u.roles}</td>
-                            <td${u.id}">
+                            <td id="actions_${u.id}">
                             <div class="btn-toolbar" id="btn-toolbar-${u.id}">
                             <button type="button"
                             class="btn btn-primary float-md-end mx-2"
@@ -476,11 +484,15 @@
                             data-bs-toggle="modal" data-bs-target="#delete${u.id}" id="delete-button-${u.id}">
                             Delete</button>
                             </td></tr>`;
+                    form.reset();
+                    const table = document.getElementById("full");
+                    table.style.display = "none"; // Скрываем таблицу
+                    location.reload();
                     addingEditModal(u.id); // вызываем добавление обработчиков событий для вызова модалок на новой строчке
                 });
         });
     }
-    function addingDeleteModal(id) {
+        function addingDeleteModal(id) {
         fetch("admin/api/user/" + id).then(
             res => {
                 res.json().then(

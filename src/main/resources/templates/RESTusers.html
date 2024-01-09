@@ -402,26 +402,7 @@
     }
 
 
-    /*function getRoles(id) {
-        if (id === undefined) {
-            id = "";
-        }
-        const roles = [
-            { id: 1, name: "ADMIN" },
-            { id: 2, name: "USER" },
-        ];
-        const selectElement = document.getElementById("singleRoleId");
-        // Обновляем идентификатор элемента на "singleRoleId"
-        // или используйте другой идентификатор, который соответствует вашему HTML-коду
-        roles.forEach((r) => {
-            let el = document.createElement("option");
-            el.value = r.id;
-            el.text = r.name;
-            selectElement.appendChild(el);
-        });
-        const selectedRoleId = selectElement.value;
-        return selectedRoleId;
-    }*/
+
     function getRoles() {
         fetch("/admin/api/roles")
             .then(res => res.json())

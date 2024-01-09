@@ -478,6 +478,10 @@
             res => {
                 res.json().then(
                     (u) => {
+                        let rolesHtml = ""; // Переменная для хранения HTML-кода ролей пользователя
+                        u.roles.forEach((role) => {
+                            rolesHtml += `<span>${role.name}</span><br>`; // Добавляем каждую роль в переменную rolesHtml
+                        });
                         document.getElementById('btn-toolbar-' + u.id).insertAdjacentHTML('beforeend', `
                                 <form id="delete-form-${u.id}">
                                     <div class="modal fade" id="delete${u.id}" tabindex="-1"
@@ -538,7 +542,7 @@
                                                             id="deleteSingleRoleId${u.id}"
                                                             class="form-control"
                                                             disabled="disabled">
-                                                            <!--Filling via JSON-->
+                                                            ${u.roles}
                                                         </select>
                                                     </div>
                                                 </div>
@@ -549,16 +553,16 @@
                                                         data-bs-dismiss="modal" id="close-button-delete-${u.id}">
                                                         Close
                                                     </button>
-                                                   <button type="button" class="btn btn-danger"
-                                                   onclick="deleteUser(${u.id})">Delete</button>
+                                                   <button type="button" class="btn btn-danger" onclick="deleteUser(${u.id}); closeModal(${u.id});">Delete</button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </form>
                             `);
-                        document.getElementById('deleteSingleRoleId' + id).innerHTML = document.getElementById('singleRoleId' + id).innerHTML;
+                        document.getElementById('deleteSingleRoleId' + id).innerHTML = document.getElementById('selectRoleId' + id).innerHTML;
                         deleteUser(u.id); // вызываем функцию отправки данных на контроллер
+                        closeModal(u.id);
                     })
             })
     }
@@ -582,9 +586,15 @@
                 // обработка ошибки при отправке запроса
             });
     }
-    function closeModal() {
-        const modal = document.getElementById('myModal');
+    function closeModal(userId) {
+        const modal = document.getElementById('delete' + userId);
         modal.style.display = 'none';
+
+        // Удаление элемента затемнения страницы
+        const modalBackdrop = document.querySelector('.modal-backdrop');
+        if (modalBackdrop) {
+            modalBackdrop.remove();
+        }
     }
     // Сохраняем нового юзера, добавляем в таблицу, очищаем форму и перемещаемся к новой строчке
     // Самовызываемая функция добавления обработчика события

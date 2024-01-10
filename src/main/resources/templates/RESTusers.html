@@ -478,10 +478,10 @@
             res => {
                 res.json().then(
                     (u) => {
-                        let rolesHtml = ""; // Переменная для хранения HTML-кода ролей пользователя
-                        u.roles.forEach((role) => {
-                            rolesHtml += `<span>${role.name}</span><br>`; // Добавляем каждую роль в переменную rolesHtml
-                        });
+                        let rolesHtml = "";
+                        for (let roleName in u.roles) {
+                            rolesHtml += `<option value="${u.roles[roleName].name}">${u.roles[roleName].name}</option>`;
+                        }
                         document.getElementById('btn-toolbar-' + u.id).insertAdjacentHTML('beforeend', `
                                 <form id="delete-form-${u.id}">
                                     <div class="modal fade" id="delete${u.id}" tabindex="-1"
@@ -542,7 +542,7 @@
                                                             id="deleteSingleRoleId${u.id}"
                                                             class="form-control"
                                                             disabled="disabled">
-                                                            ${u.roles}
+                                                            ${rolesHtml}
                                                         </select>
                                                     </div>
                                                 </div>
@@ -560,9 +560,6 @@
                                     </div>
                                 </form>
                             `);
-                        document.getElementById('deleteSingleRoleId' + id).innerHTML = document.getElementById('selectRoleId' + id).innerHTML;
-                        deleteUser(u.id); // вызываем функцию отправки данных на контроллер
-                        closeModal(u.id);
                     })
             })
     }

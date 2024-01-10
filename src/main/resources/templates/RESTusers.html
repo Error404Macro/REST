@@ -233,7 +233,6 @@
                             u.roles.forEach((role) => {
                                 rolesHtml += `<span>${role.name}</span><br>`; // Добавляем каждую роль в переменную rolesHtml
                             });
-                            // Создайте строку таблицы
                             let rowHtml = `<tr id=tr_${u.id}>
                             <td>${u.id}</td>
                             <td>${u.username}</td>
@@ -253,7 +252,6 @@
                             </td>
                         </tr>`;
 
-                            // Вставьте строку в таблицу
                             document.getElementById("full").insertAdjacentHTML('beforeend', rowHtml);
                         });
                     })
@@ -389,11 +387,10 @@
                                     </div>
                                 </form>
                             `);
-                                    getRoles(); // вызываем для созданной модалки заполнение ролей
-                                    addingDeleteModal(u.id) // вызываем создание модалки удаления
-                                    editUser(u.id); // вызываем функцию отправки данных на контроллер
-                                    firstTime[u.id] = true; // Добавляем проверку, если модальные окна были сформированы,
-                                    // мы их не задваиваем
+                                    getRoles();
+                                    addingDeleteModal(u.id)
+                                    editUser(u.id);
+                                    firstTime[u.id] = true;
                                 }
                             });
                         })
@@ -408,17 +405,24 @@
             .then(res => res.json())
             .then(roles => {
                 const selectElement = document.getElementById("singleRoleId");
-                selectElement.innerHTML = ""; // Очищаем список ролей перед обновлением
+                selectElement.innerHTML = "";
+
+                const existingRoles = [];
+
                 roles.forEach((r) => {
-                    let el = document.createElement("option");
-                    el.value = r.id;
-                    el.text = r.name;
-                    selectElement.appendChild(el);
+                    // Проверяем, есть ли роль уже в списке
+                    if (!existingRoles.includes(r.name)) {
+                        let el = document.createElement("option");
+                        el.value = r.id;
+                        el.text = r.name;
+                        selectElement.appendChild(el);
+
+                        existingRoles.push(r.name);
+                    }
                 });
             });
     }
 
-    // Вызываем функцию getRoles() в начале скрипта, чтобы загрузить список ролей при загрузке страницы
     getRoles();
 
 
@@ -447,8 +451,8 @@
                 })
             })
                 .then(res => res.json())
-                .then(u => { // Удаляем старую строчку и вставляем новую
-                    document.getElementById('close-button-edit-' + u.id).click(); // закрываем вручную модалку
+                .then(u => {
+                    document.getElementById('close-button-edit-' + u.id).click();
                     document.getElementById("tr_" + u.id).innerHTML =
                         `<tr id=tr_${u.id}><td>${u.id}</td>
                             <td>${u.username}</td>
@@ -467,9 +471,9 @@
                             </td></tr>`;
                     form.reset();
                     const table = document.getElementById("full");
-                    table.style.display = "none"; // Скрываем таблицу
+                    table.style.display = "none";
                     location.reload();
-                    addingEditModal(u.id); // вызываем добавление обработчиков событий для вызова модалок на новой строчке
+                    addingEditModal(u.id);
                 });
         });
     }
@@ -569,32 +573,30 @@
         })
             .then(response => {
                 if (response.ok) {
-                    // успешно удалено, выполните необходимые действия
+                    // успешно удалено
                     const row = document.getElementById(`tr_${userId}`);
                     row.remove(); // удаление строки пользователя из таблицы
 
                     // Закрытие модального окна
-                    closeModal(); // Ваша функция для закрытия модального окна
+                    closeModal();
                 } else {
-                    // обработка ошибки при удалении пользователя
+
                 }
             })
             .catch(error => {
-                // обработка ошибки при отправке запроса
+
             });
     }
     function closeModal(userId) {
         const modal = document.getElementById('delete' + userId);
         modal.style.display = 'none';
 
-        // Удаление элемента затемнения страницы
         const modalBackdrop = document.querySelector('.modal-backdrop');
         if (modalBackdrop) {
             modalBackdrop.remove();
         }
     }
-    // Сохраняем нового юзера, добавляем в таблицу, очищаем форму и перемещаемся к новой строчке
-    // Самовызываемая функция добавления обработчика события
+    // Сохранение юзера
     (function () {
         let form = document.forms['new-user-form'];
         form.addEventListener('submit', (e) => {

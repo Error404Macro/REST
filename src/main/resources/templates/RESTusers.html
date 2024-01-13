@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" dir="ltr">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml" lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
     <title>Users Management System</title>
@@ -406,7 +406,7 @@
             .then(roles => {
                 const selectElement = document.getElementById("singleRoleId");
                 selectElement.innerHTML = "";
-
+                selectElement.multiple = true;
                 const existingRoles = [];
 
                 roles.forEach((r) => {
@@ -431,7 +431,12 @@
         let form = document.forms['edit-form-' + id];
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-            const selectedRoleId = getRoles();
+            const selectedOptions = Array.from(form.singleRoleId.selectedOptions);
+            const selectedRoles = selectedOptions.map(option => ({
+                id: option.value,
+                name: option.text
+            }));
+
             fetch("/admin/api/update", {
                 method: 'PUT',
                 headers: {
@@ -442,12 +447,7 @@
                     username: form.username.value,
                     age: form.age.value,
                     password: form.password.value,
-                    roles: [
-                        {
-                            id: selectedRoleId,
-                            name: form.singleRoleId.options[form.singleRoleId.selectedIndex].text
-                        }
-                    ]
+                    roles: selectedRoles
                 })
             })
                 .then(res => res.json())
@@ -602,7 +602,11 @@
         form.addEventListener('submit', (e) => {
             e.preventDefault();
 
-            const selectedRoleId = getRoles();
+            const selectedOptions = Array.from(form.singleRoleId.selectedOptions);
+            const selectedRoles = selectedOptions.map(option => ({
+                id: option.value,
+                name: option.text
+            }));
 
             fetch("/admin/api", {
                 method: 'POST',
@@ -613,12 +617,7 @@
                     username: form.username.value,
                     age: form.age.value,
                     password: form.password.value,
-                    roles: [
-                        {
-                            id: selectedRoleId,
-                            name: form.singleRoleId.options[form.singleRoleId.selectedIndex].text
-                        }
-                    ]
+                    roles: selectedRoles
                 })
             })
                 .then(res => res.json())
@@ -628,7 +627,7 @@
                     <td>${u.id}</td>
                     <td>${u.username}</td>
                     <td>${u.age}</td>
-                    <td>${u.roles[0].name}</td>
+                    <td>${u.roles.map(role => role.name).join(', ')}</td>
                     <td>
                         <input type="hidden" id="singleRoleId${u.id}">
                         <div class="btn-toolbar" id="btn-toolbar-${u.id}">
@@ -641,6 +640,7 @@
                         </div>
                     </td>
                 </tr>`);
+
                     form.reset();
                     const table = document.getElementById("full");
                     table.style.display = "none"; // Скрываем таблицу
